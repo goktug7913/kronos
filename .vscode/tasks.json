@@ -6,7 +6,8 @@
         {
             "label": "Build",
             "type": "shell",
-            "command": "cd gnu-efi && make bootloader"
+            "command": "sh BUILD.sh"
+            //cd gnu-efi && make bootloader &&cd ../kernel && make setup && make kernel && make buildimg
         }
         ,
         {

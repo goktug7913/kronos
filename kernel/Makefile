@@ -7,7 +7,7 @@ LDS = kernel.ld
 CC = gcc
 LD = ld
 
-CFLAGS = -ffreestanding -fshort-wchar -I/home/gktdev/Kronos/commonlib
+CFLAGS = -ffreestanding -fshort-wchar -I/home/gktdev/Kronos/commonlib -g -O0
 LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
 
 SRCDIR := src
