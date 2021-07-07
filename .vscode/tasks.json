@@ -13,7 +13,7 @@
         {
             "label": "Run",
             "type": "shell",
-            "command": "powershell.exe \".\\kernel\\run.bat\""
+            "command": "powershell.exe \"Start-Process .\\kernel\\run.bat\""
         }
         ,
         {
