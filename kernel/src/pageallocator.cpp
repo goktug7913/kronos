@@ -114,6 +114,7 @@ void PageAllocator::unreservePages(void* addr, uint64_t pageCount){
 }
 
 void* PageAllocator::requestpage(){
+    
     for (uint64_t index = 0; index < PageBitmap.size * 8; index++){
         if (PageBitmap[index == true]){
             lockpage((void*)(index * 4096));
@@ -123,12 +124,8 @@ void* PageAllocator::requestpage(){
     return NULL; //If theres no memory available return nothing, IMPLEMENT PAGE SWAP 
 }
 
-uint64_t PageAllocator::GetFreeRAM(){return FreeMem;}
+uint64_t PageAllocator::GetFreeRAM() {return FreeMem;}
 
-uint64_t PageAllocator::GetUsedRAM(){
-    return UsedMem;
-}
+uint64_t PageAllocator::GetUsedRAM() {return UsedMem;}
 
-uint64_t PageAllocator::GetReservedRAM(){
-    return ReservedMem;
-}
+uint64_t PageAllocator::GetReservedRAM() {return ReservedMem;}

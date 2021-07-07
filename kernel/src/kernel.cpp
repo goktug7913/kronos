@@ -20,8 +20,6 @@ extern uint64_t _KernelEnd;
 
 extern "C" void _start(bootnfo* bootinfo){
 	
-	//st_Framebuffer* KronosFramebuffer = bootinfo->framebuffer;
-	//PSF1_FONT* psf1_font = bootinfo->psf1_font;
 	KronosRenderer Renderer(bootinfo->framebuffer, bootinfo->psf1_font);
 	Renderer.Cursor = {0, 0};
 
@@ -56,11 +54,12 @@ extern "C" void _start(bootnfo* bootinfo){
 		Renderer.print(0xff00fff, " Kbytes");
 		Renderer.Cursor = {0, Renderer.Cursor.y+16};
 	
-	for (int i = 0; i < 20; i++){
+	for (uint64_t i = 0; i < 20; i++){
 		void* pageadr = PgAllocr.requestpage();
-		Renderer.Cursor = {0, Renderer.Cursor.y+16};
+		Renderer.print(0xfffffff, "Page "); Renderer.print(0xfffffff, tostr(i)); Renderer.print(0xfffffff, ": ");
 		Renderer.print(0x00fffffff, h_tostr((uint64_t)pageadr));
 		Renderer.Cursor = {0, Renderer.Cursor.y+16};
 	}
+
     return; //Returns to EFI Shell
 };

@@ -97,7 +97,7 @@ st_Framebuffer* InitializeGOP(){
     	status = uefi_call_wrapper(gop->SetMode, 2, gop, 0);
 
   		if(EFI_ERROR(status)) {
-    		Print(L"Unable to get native GOP mode\r\n");
+    		Print(L"Unable to get current GOP mode\r\n");
   		}	
     	framebuffer.NativeMode = gop->Mode->Mode;
 	}
