@@ -30,6 +30,7 @@ class PageAllocator{
     
     void reservepage(void* addr);
     void unreservepage(void* addr);
+    
     void reservePages(void* addr, uint64_t pageCount);
     void unreservePages(void* addr, uint64_t pageCount);
 };
