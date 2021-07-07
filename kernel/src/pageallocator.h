@@ -11,9 +11,12 @@ class PageAllocator{
     Bitmap PageBitmap;
     
     void ReadEfiMemMap(EFI_MEMORY_DESCRIPTOR* MemMap, size_t MemMapSize, size_t MemMapDescSize);
+
     void freepage(void* addr);
+
     void lockpage(void* addr);
     void lockpages(void* addr, uint64_t pageCount);
+    
     void* requestpage();
 
     uint64_t GetFreeRAM();

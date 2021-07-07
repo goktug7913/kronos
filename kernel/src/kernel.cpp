@@ -26,12 +26,13 @@ extern "C" void _start(bootnfo* bootinfo){
 	PageAllocator PgAllocr;
 	PgAllocr.ReadEfiMemMap(bootinfo->MemMap, bootinfo->MapSize, bootinfo->DescSize);
 
-	//uint64_t kernelSize = (uint64_t)&_KernelEnd - (uint64_t)&_KernelStart;
-    //uint64_t kernelPages = (uint64_t)kernelSize / 4096 + 1;
+	/*uint64_t kernelSize = (uint64_t)&_KernelEnd - (uint64_t)&_KernelStart;
+    uint64_t kernelPages = (uint64_t)kernelSize / 4096 + 1;
+
+	PgAllocr.lockpages(&_KernelStart, kernelPages);*/
 
 	//Find UEFI Memory Map Entry Count
 	uint64_t MemMapEntries = bootinfo->MapSize / bootinfo->DescSize;
-	
 	
 		//Print memory stats
 		Renderer.print(0xfffffff, "Total RAM: ");
@@ -54,12 +55,21 @@ extern "C" void _start(bootnfo* bootinfo){
 		Renderer.print(0xff00fff, " Kbytes");
 		Renderer.Cursor = {0, Renderer.Cursor.y+16};
 	
+	uint8_t testbuffer[20];
+	Bitmap testbitmap;
+	testbitmap.buffer = &testbuffer[0];
+	testbitmap.set(0, false);
+	testbitmap.set(1, true);
+	testbitmap.set(2, true);
+	testbitmap.set(3, false);
+	testbitmap.set(4, true);
+
 	for (uint64_t i = 0; i < 20; i++){
 		void* pageadr = PgAllocr.requestpage();
 		Renderer.print(0xfffffff, "Page "); Renderer.print(0xfffffff, tostr(i)); Renderer.print(0xfffffff, ": ");
 		Renderer.print(0x00fffffff, h_tostr((uint64_t)pageadr));
+		//Renderer.print(0xfffffff, testbitmap[i] ? "true" : "false");
 		Renderer.Cursor = {0, Renderer.Cursor.y+16};
 	}
 
-    return; //Returns to EFI Shell
 };

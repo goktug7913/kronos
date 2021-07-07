@@ -10,6 +10,7 @@ LD = ld
 CFLAGS = -ffreestanding -fshort-wchar -I/home/gktdev/Kronos/commonlib -g -O0
 LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
 
+
 SRCDIR := src
 OBJDIR := lib
 BUILDDIR = bin
@@ -33,7 +34,6 @@ link:
 	$(LD) $(LDFLAGS) -o $(BUILDDIR)/kernel.elf $(OBJS)
 
 setup:
-	@mkdir $(BUILDDIR)
 	@mkdir $(SRCDIR)
 	@mkdir $(OBJDIR)
 

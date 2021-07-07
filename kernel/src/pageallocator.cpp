@@ -7,7 +7,6 @@ uint64_t UsedMem;
 bool initialized = 0;
 
 
-
 void PageAllocator::ReadEfiMemMap(EFI_MEMORY_DESCRIPTOR* MemMap, size_t MemMapSize, size_t MemMapDescSize){
 
     if (initialized) return;
@@ -29,14 +28,9 @@ void PageAllocator::ReadEfiMemMap(EFI_MEMORY_DESCRIPTOR* MemMap, size_t MemMapSi
 
     uint64_t MemSize = GetMemSize(MemMap, MemMapEntries, MemMapDescSize);
     FreeMem = MemSize;
-    uint64_t Bitmapsize = MemSize / 4006 / 8 + 1;
+    uint64_t Bitmapsize = MemSize / 4096 / 8 + 1;
     
-    //initbitmap(Bitmapsize, LargestMemSeg);
-
-    //Lock Pages
-
-    //Reserve
-
+    initbitmap(Bitmapsize, LargestMemSeg);
     initialized = true;
 }
 
@@ -116,10 +110,9 @@ void PageAllocator::unreservePages(void* addr, uint64_t pageCount){
 void* PageAllocator::requestpage(){
     
     for (uint64_t index = 0; index < PageBitmap.size * 8; index++){
-        if (PageBitmap[index == true]){
+        if (PageBitmap[index == true]) continue;
             lockpage((void*)(index * 4096));
             return (void*)(index * 4096);
-        }
     }
     return NULL; //If theres no memory available return nothing, IMPLEMENT PAGE SWAP 
 }
