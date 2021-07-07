@@ -4,8 +4,6 @@ uint64_t FreeMem;
 uint64_t ReservedMem;
 uint64_t UsedMem;
 
-PageAllocator GlobalAllocator;
-
 bool initialized = 0;
 
 
@@ -35,7 +33,7 @@ void PageAllocator::ReadEfiMemMap(EFI_MEMORY_DESCRIPTOR* MemMap, size_t MemMapSi
     for (int i = 0; i < MemMapEntries; i++){
         EFI_MEMORY_DESCRIPTOR* desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)MemMap + (i * MemMapDescSize));
         if (desc->type != 7){ // not efiConventionalMemory
-            reservePages(desc->phyAddr, desc->numPages);
+            reservepages(desc->phyAddr, desc->numPages);
         }
     }
 
@@ -112,16 +110,14 @@ void PageAllocator::unreservepage(void* addr){
     ReservedMem -= 4096;
 }
 
-void PageAllocator::reservePages(void* addr, uint64_t pageCount){
+void PageAllocator::reservepages(void* addr, uint64_t pageCount){
 
-    uint64_t index = (uint64_t)addr / 4096;
-    if (PageBitmap[index] == true) return;
-    PageBitmap.set(index, true);
-    FreeMem -= 4096;
-    ReservedMem += 4096;
+    for (int t = 0; t < pageCount; t++){
+        reservepage((void*)((uint64_t)addr + (t * 4096)));
+    }
 }
 
-void PageAllocator::unreservePages(void* addr, uint64_t pageCount){
+void PageAllocator::unreservepages(void* addr, uint64_t pageCount){
 
     for (int i = 0; i < pageCount; i++){
         unreservepage((void*)((uint64_t)addr + (i * 4096)));

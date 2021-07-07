@@ -31,8 +31,8 @@ class PageAllocator{
     void reservepage(void* addr);
     void unreservepage(void* addr);
     
-    void reservePages(void* addr, uint64_t pageCount);
-    void unreservePages(void* addr, uint64_t pageCount);
+    void reservepages(void* addr, uint64_t pageCount);
+    void unreservepages(void* addr, uint64_t pageCount);
 };
 
 extern PageAllocator GlobalAllocator;

@@ -16,6 +16,7 @@
 extern uint64_t _KernelStart;
 extern uint64_t _KernelEnd;
 
+PageAllocator GlobalAllocator;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 //KERNEL ENTRY
@@ -79,6 +80,7 @@ extern "C" void _start(bootnfo* bootinfo){
 
     uint64_t fbBase = (uint64_t)bootinfo->framebuffer->baseAddr;
     uint64_t fbSize = (uint64_t)bootinfo->framebuffer->bufSize + 0x1000;
+
     for (uint64_t t = fbBase; t < fbBase + fbSize; t += 4096){
         pageTableManager.MapMemory((void*)t, (void*)t);
     }
