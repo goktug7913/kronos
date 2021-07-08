@@ -1,7 +1,7 @@
 #include "cstr.h"
 
 char uintTo_StringOutput[128];
-const char* tostr(uint64_t value){
+const char* to_string(uint64_t value){
     uint8_t size;
     uint64_t sizeTest = value;
     while (sizeTest / 10 > 0){
@@ -23,7 +23,7 @@ const char* tostr(uint64_t value){
 }
 
 char hexTo_StringOutput[128];
-const char* h_tostr(uint64_t value){
+const char* to_hstring(uint64_t value){
     uint64_t* valPtr = &value;
     uint8_t* ptr;
     uint8_t tmp;
@@ -40,7 +40,7 @@ const char* h_tostr(uint64_t value){
 }
 
 char hexTo_StringOutput32[128];
-const char* h_tostr(uint32_t value){
+const char* to_hstring(uint32_t value){
     uint32_t* valPtr = &value;
     uint8_t* ptr;
     uint8_t tmp;
@@ -57,7 +57,7 @@ const char* h_tostr(uint32_t value){
 }
 
 char hexTo_StringOutput16[128];
-const char* h_tostr(uint16_t value){
+const char* to_hstring(uint16_t value){
     uint16_t* valPtr = &value;
     uint8_t* ptr;
     uint8_t tmp;
@@ -74,7 +74,7 @@ const char* h_tostr(uint16_t value){
 }
 
 char hexTo_StringOutput8[128];
-const char* h_tostr(uint8_t value){
+const char* to_hstring(uint8_t value){
     uint8_t* valPtr = &value;
     uint8_t* ptr;
     uint8_t tmp;
@@ -91,7 +91,7 @@ const char* h_tostr(uint8_t value){
 }
 
 char intTo_StringOutput[128];
-const char* tostr(int64_t value){
+const char* to_string(int64_t value){
     uint8_t isNegative = 0;
 
     if (value < 0){
@@ -121,10 +121,10 @@ const char* tostr(int64_t value){
 }
 
 char doubleTo_StringOutput[128];
-const char* tostr(double value, uint8_t decimalPlaces){
+const char* to_string(double value, uint8_t decimalPlaces){
     if (decimalPlaces > 20) decimalPlaces = 20;
 
-    char* intPtr = (char*)tostr((int64_t)value);
+    char* intPtr = (char*)to_string((int64_t)value);
     char* doublePtr = doubleTo_StringOutput;
 
     if (value < 0){
@@ -153,6 +153,6 @@ const char* tostr(double value, uint8_t decimalPlaces){
     return doubleTo_StringOutput;
 }
 
-const char* tostr(double value){
-    return tostr(value, 2);
+const char* to_string(double value){
+    return to_string(value, 2);
 }

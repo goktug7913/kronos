@@ -5,12 +5,11 @@
 
 //Framebuffer Structure
 typedef struct {
-	void* baseAddr;
-	size_t bufSize;
+	void* BaseAddress;
+	size_t BufferSize;
 	unsigned int Width;
 	unsigned int Height;
-	unsigned int PixPerScanline;
+	unsigned int PixelsPerScanLine;
 	unsigned int ModeCount;
 	uint32_t NativeMode;
-	
-}st_Framebuffer;
+}Framebuffer;

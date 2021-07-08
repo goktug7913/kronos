@@ -1,19 +1,11 @@
 #pragma once
-#include <stddef.h>
 #include <stdint.h>
 
-const char* tostr(uint64_t val); //Unsigned Integer to ASCII
-
-const char* tostr(int64_t val); //Signed Integer to ASCII
-
-const char* tostr(double val, uint8_t dec_places); //Double to ASCII
-
-const char* tostr(double val); //Double to ASCII
-
-const char* h_tostr(uint64_t value); //Hex to ASCII
-
-const char* h_tostr(uint32_t value); //Hex to ASCII
-
-const char* h_tostr(uint16_t value); //Hex to ASCII
-
-const char* h_tostr(uint8_t value); //Hex to ASCII
+const char* to_string(uint64_t value);
+const char* to_string(int64_t value);
+const char* to_hstring(uint64_t value);
+const char* to_hstring(uint32_t value);
+const char* to_hstring(uint16_t value);
+const char* to_hstring(uint8_t value);
+const char* to_string(double value, uint8_t decimalPlaces);
+const char* to_string(double value);

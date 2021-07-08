@@ -6,7 +6,7 @@
 #include "framebuffer.h"
 #include "bootnfo.h"
 
-st_Framebuffer framebuffer;
+Framebuffer framebuffer;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -70,7 +70,7 @@ PSF1_FONT* LoadPSF(EFI_FILE* Directory, CHAR16* Path, EFI_HANDLE ImageHandle, EF
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-st_Framebuffer* InitializeGOP(){
+Framebuffer* InitializeGOP(){
 
 	// INITIALIZES AND RETURNS ADDRESS OF THE GOP FRAMEBUFFER
 
@@ -132,13 +132,13 @@ st_Framebuffer* InitializeGOP(){
 	}
 	
 	//Get and set Framebuffer Core
-	framebuffer.baseAddr = (void*)gop->Mode->FrameBufferBase;
-	framebuffer.bufSize = gop->Mode->FrameBufferSize;
+	framebuffer.BaseAddress = (void*)gop->Mode->FrameBufferBase;
+	framebuffer.BufferSize = gop->Mode->FrameBufferSize;
 
 	//Get and set resolution from GOP
 	framebuffer.Width = gop->Mode->Info->HorizontalResolution;
 	framebuffer.Height = gop->Mode->Info->VerticalResolution;
-	framebuffer.PixPerScanline = gop->Mode->Info->PixelsPerScanLine;
+	framebuffer.PixelsPerScanLine = gop->Mode->Info->PixelsPerScanLine;
 
 	return &framebuffer;
 }
@@ -229,14 +229,14 @@ EFI_STATUS efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 	Print(L"Kernel Ready!\n\r\n\r");
 	
 	//Initialize Framebuffer
-	st_Framebuffer* KronosFramebuffer = InitializeGOP();
+	Framebuffer* KronosFramebuffer = InitializeGOP();
 
 	Print(L"Current GOP Mode: %d\n\r", 		KronosFramebuffer->NativeMode);
-	Print(L"GOP Addr: 0x%x\n\r", 			KronosFramebuffer->baseAddr);
-	Print(L"size: 0x%x\n\r", 				KronosFramebuffer->bufSize); 
+	Print(L"GOP Addr: 0x%x\n\r", 			KronosFramebuffer->BaseAddress);
+	Print(L"size: 0x%x\n\r", 				KronosFramebuffer->BufferSize); 
 	Print(L"Horizontal Resolution: %d\n\r", KronosFramebuffer->Width);
 	Print(L"Vertical Resolution: %d\n\r", 	KronosFramebuffer->Height);
-	Print(L"Scanline Pixel Length: %d\n\r", KronosFramebuffer->PixPerScanline);
+	Print(L"Scanline Pixel Length: %d\n\r", KronosFramebuffer->PixelsPerScanLine);
 	Print(L"\n\r\n\r");
 	
 	PSF1_FONT* newFont = LoadPSF(NULL, L"zap-light18.psf", ImageHandle, SystemTable);
@@ -260,15 +260,15 @@ EFI_STATUS efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 
 
 	//Declaration of kernel handoff function
-	void (*KernelStart)(bootnfo*) = ((__attribute__((sysv_abi)) void (*)(bootnfo*) ) header.e_entry);
+	void (*KernelStart)(BootInfo*) = ((__attribute__((sysv_abi)) void (*)(BootInfo*) ) header.e_entry);
 	
-	bootnfo bootinfo;
+	BootInfo bootinfo;
 	
 	bootinfo.framebuffer = KronosFramebuffer;
-	bootinfo.psf1_font = newFont;
-	bootinfo.MemMap = MemMap;
-	bootinfo.MapSize = MapSize;
-	bootinfo.DescSize = DescSize;
+	bootinfo.psf1_Font = newFont;
+	bootinfo.mMap = MemMap;
+	bootinfo.mMapSize = MapSize;
+	bootinfo.mMapDescSize = DescSize;
 
 	SystemTable->BootServices->ExitBootServices(ImageHandle, MapKey);
 

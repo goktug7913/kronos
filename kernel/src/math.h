@@ -1,5 +1,6 @@
 #pragma once
 
-struct intPoint{
-	unsigned int x, y;
+struct Point{
+    unsigned int X;
+    unsigned int Y;
 };
