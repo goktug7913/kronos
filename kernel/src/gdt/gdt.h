@@ -4,7 +4,7 @@
 struct GDTDescriptor {
     uint16_t Size;
     uint64_t Offset;
-}__attribute__((packed));
+} __attribute__((packed));
 
 struct GDTEntry {
     uint16_t Limit0;
@@ -22,7 +22,7 @@ struct GDT {
     GDTEntry UserNull;
     GDTEntry UserCode;
     GDTEntry UserData;
-}__attribute__((packed)) 
+} __attribute__((packed)) 
 __attribute((aligned(0x1000)));
 
 extern GDT DefaultGDT;
