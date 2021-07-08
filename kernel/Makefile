@@ -5,9 +5,11 @@ GNUEFI = ../gnu-efi
 OVMFDIR = ../OVMFbin
 LDS = kernel.ld
 CC = gcc
+ASMC = nasm
 LD = ld
 
 CFLAGS = -ffreestanding -fshort-wchar -I/home/gktdev/Kronos/commonlib -g -O0
+ASMFLAGS =
 LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
 
 
@@ -18,8 +20,12 @@ BOOTEFI := $(GNUEFI)/x86_64/bootloader/main.efi
 
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
-SRC = $(call rwildcard,$(SRCDIR),*.cpp)          
+SRC = $(call rwildcard,$(SRCDIR),*.cpp)
+ASMSRC = $(call rwildcard,$(SRCDIR),*.asm)
+
 OBJS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
+OBJS += $(patsubst $(SRCDIR)/%.asm, $(OBJDIR)/%_asm.o, $(ASMSRC))
+
 DIRS = $(wildcard $(SRCDIR)/*)
 
 kernel: $(OBJS) link
@@ -28,6 +34,11 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@ echo !==== COMPILING $^
 	@ mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $^ -o $@ -I/home/gktdev/Kronos/commonlib
+
+$(OBJDIR)/%_asm.o: $(SRCDIR)/%.asm
+	@ echo !==== COMPILING $^
+	@ mkdir -p $(@D)
+	$(ASMC) $(ASMFLAGS) $^ -f elf64 -o $@
 	
 link:
 	@ echo !==== LINKING
