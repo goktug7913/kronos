@@ -13,6 +13,8 @@ class BasicRenderer{
     unsigned int Colour;
     void Print(const char* str);
     void PutChar(char chr, unsigned int xOff, unsigned int yOff);
+    void Clear(uint32_t colour);
+    void Next();
 };
 
 extern BasicRenderer* GlobalRenderer;

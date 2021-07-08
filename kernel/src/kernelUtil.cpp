@@ -47,6 +47,16 @@ void PrepareInterrupts(){
     int_PageFault->type_attr = IDT_TA_InterruptGate;
     int_PageFault->selector = 0x08;
 
+    IDTDescEntry* int_DoubleFault = (IDTDescEntry*)(idtr.Offset + 0x8 * sizeof(IDTDescEntry));
+    int_DoubleFault->SetOffset((uint64_t)DoubleFault_handler);
+    int_DoubleFault->type_attr = IDT_TA_InterruptGate;
+    int_DoubleFault->selector = 0x08;
+
+    IDTDescEntry* int_GPFault = (IDTDescEntry*)(idtr.Offset + 0x8 * sizeof(IDTDescEntry));
+    int_GPFault->SetOffset((uint64_t)GPFault_handler);
+    int_GPFault->type_attr = IDT_TA_InterruptGate;
+    int_GPFault->selector = 0x08;
+
     asm ("lidt %0" : : "m" (idtr));
 }
 

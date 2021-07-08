@@ -7,7 +7,9 @@ extern "C" void _start(BootInfo* bootInfo){
 
     GlobalRenderer->Print("Kernel Initialized Successfully");
 
-    asm("int $0x0e");
+    int* test = (int*)0x80000000000;
+
+    *test = 2;
 
     while(true){};
 }
