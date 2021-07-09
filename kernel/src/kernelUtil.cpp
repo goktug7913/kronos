@@ -45,7 +45,7 @@ void PrepareInterrupts(){
     idtr.Limit = 0x0FFF;
     idtr.Offset = (uint64_t)GlobalAllocator.RequestPage();
     
-    {
+    { // Fill The IDT with interrupt handlers
         IDTDescEntry* int_PageFault = (IDTDescEntry*)(idtr.Offset + 0xE * sizeof(IDTDescEntry));
         int_PageFault->SetOffset((uint64_t)PageFault_handler);
         int_PageFault->type_attr = IDT_TA_InterruptGate;
@@ -56,10 +56,20 @@ void PrepareInterrupts(){
         int_DoubleFault->type_attr = IDT_TA_InterruptGate;
         int_DoubleFault->selector = 0x08;
 
-        IDTDescEntry* int_GPFault = (IDTDescEntry*)(idtr.Offset + 0x8 * sizeof(IDTDescEntry));
+        IDTDescEntry* int_GPFault = (IDTDescEntry*)(idtr.Offset + 0xD * sizeof(IDTDescEntry));
         int_GPFault->SetOffset((uint64_t)GPFault_handler);
         int_GPFault->type_attr = IDT_TA_InterruptGate;
         int_GPFault->selector = 0x08;
+
+        IDTDescEntry* int_Overflow = (IDTDescEntry*)(idtr.Offset + 0x4 * sizeof(IDTDescEntry));
+        int_Overflow->SetOffset((uint64_t)OverflowHandler);
+        int_Overflow->type_attr = IDT_TA_TrapGate;
+        int_Overflow->selector = 0x08;
+
+        IDTDescEntry* int_StackSegmentFault = (IDTDescEntry*)(idtr.Offset + 0xC * sizeof(IDTDescEntry));
+        int_StackSegmentFault->SetOffset((uint64_t)StackSegFaultHandler);
+        int_StackSegmentFault->type_attr = IDT_TA_TrapGate;
+        int_StackSegmentFault->selector = 0x08;
 
         IDTDescEntry* int_Keyboard = (IDTDescEntry*)(idtr.Offset + 0x21 * sizeof(IDTDescEntry));
         int_Keyboard->SetOffset((uint64_t)KeyboardInterrupt_handler);

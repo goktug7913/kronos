@@ -26,8 +26,7 @@ void BasicRenderer::Print(const char* str)
     }
 }
 
-void BasicRenderer::PutChar(char chr, unsigned int xOff, unsigned int yOff)
-{
+void BasicRenderer::PutChar(char chr, unsigned int xOff, unsigned int yOff){
     unsigned int* pixPtr = (unsigned int*)TargetFramebuffer->BaseAddress;
     char* fontPtr = (char*)PSF1_Font->glyphBuf + (chr * PSF1_Font->psf1_header->charsize);
     for (unsigned long y = yOff; y < yOff + 16; y++){
@@ -41,6 +40,12 @@ void BasicRenderer::PutChar(char chr, unsigned int xOff, unsigned int yOff)
     }
 }
 
+void BasicRenderer::PutChar(char chr){
+    PutChar(chr, CursorPosition.X, CursorPosition.Y);
+    CursorPosition.X += 8; //Next Character
+    if (CursorPosition.X + 8 > TargetFramebuffer->Width){BasicRenderer::Next();} //If at the edge of screen, nextline
+}
+
 void BasicRenderer::Clear(uint32_t colour){
     uint64_t fbBase = (uint64_t)TargetFramebuffer->BaseAddress;
     uint64_t bytesPerScanline = TargetFramebuffer->PixelsPerScanLine * 4; //Each pixel is 4 bytes
@@ -50,7 +55,34 @@ void BasicRenderer::Clear(uint32_t colour){
     for (int vScanline; vScanline < fbHeight; vScanline++){
         uint64_t pixPtrBase = fbBase + (bytesPerScanline * vScanline);
         for (uint32_t* pixPtr = (uint32_t*)pixPtrBase; pixPtr < (uint32_t*)pixPtrBase + bytesPerScanline; pixPtr++){
-            *pixPtr = colour;
+            *pixPtr = ClearColour;
+        }
+    }
+}
+
+void BasicRenderer::ClearChar(){
+
+    if (CursorPosition.X == 0){                           // If we are at the beginning of a new line
+        CursorPosition.X = TargetFramebuffer->Width;      // Go to end of the line
+        CursorPosition.Y -= 16;                           // Go up a line
+        if(CursorPosition.Y < 0){CursorPosition.Y = 0;}   // Out of bounds check
+    }
+    
+    unsigned int xOff = CursorPosition.X;
+    unsigned int yOff = CursorPosition.Y;
+
+        unsigned int* pixPtr = (unsigned int*)TargetFramebuffer->BaseAddress;
+    for (unsigned long y = yOff; y < yOff + 16; y++){
+        
+        for (unsigned long x = xOff - 8; x < xOff; x++){
+            
+            *(unsigned int*)(pixPtr + x + (y * TargetFramebuffer->PixelsPerScanLine)) = ClearColour;
+        }
+    
+        if (CursorPosition.X == 0){                           // If we are at the beginning of a new line
+            CursorPosition.X = TargetFramebuffer->Width;      // Go to end of the line
+            CursorPosition.Y -= 16;                           // Go up a line
+            if(CursorPosition.Y < 0){CursorPosition.Y = 0;}   // Out of bounds check
         }
     }
 }

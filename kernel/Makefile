@@ -8,7 +8,7 @@ CC = gcc
 ASMC = nasm
 LD = ld
 
-CFLAGS = -ffreestanding -fshort-wchar -I/home/gktdev/Kronos/commonlib -g -O0
+CFLAGS = -ffreestanding -fshort-wchar -I/home/gktdev/Kronos/commonlib -g -O0 -mno-red-zone
 ASMFLAGS =
 LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
 

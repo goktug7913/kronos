@@ -2,6 +2,7 @@
 #include "../panic.h"
 #include "../IO.h"
 #include "../cstr.h"
+#include "../perhiperals/keyboard.h"
 
 __attribute__((interrupt)) void PageFault_handler(struct interrupt_frame* frame){
     Panic("Page Fault Detected");
@@ -16,13 +17,17 @@ __attribute__((interrupt)) void GPFault_handler(struct interrupt_frame* frame){
     Panic("General Protection Fault Detected");
 }
 
+__attribute__((interrupt)) void OverflowHandler(struct interrupt_frame* frame){
+    Panic("Overflow Detected");
+}
+
+__attribute__((interrupt)) void StackSegFaultHandler(struct interrupt_frame* frame){
+    Panic("Stack Segment Fault Detected");
+}
+
 __attribute__((interrupt)) void KeyboardInterrupt_handler(struct interrupt_frame* frame){
     uint8_t scancode = inb(0x60); //Get the key scancode
-
-    GlobalRenderer->Print("Key Pressed, Scancode = ");
-    GlobalRenderer->Print(to_string((uint64_t)scancode));
-    GlobalRenderer->Next();
-    
+    HandleKeyboard(scancode); //Handle keyboard scancode
     PIC_EndMaster(); //Clear the interrupt
 }
 

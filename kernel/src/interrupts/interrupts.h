@@ -18,7 +18,10 @@ struct interrupt_frame;
 __attribute__((interrupt)) void PageFault_handler(struct interrupt_frame* frame);
 __attribute__((interrupt)) void DoubleFault_handler(struct interrupt_frame* frame);
 __attribute__((interrupt)) void GPFault_handler(struct interrupt_frame* frame);
+__attribute__((interrupt)) void OverflowHandler(struct interrupt_frame* frame);
 __attribute__((interrupt)) void KeyboardInterrupt_handler(struct interrupt_frame* frame);
+__attribute__((interrupt)) void StackSegFaultHandler(struct interrupt_frame* frame);
+
 
 void RemapPIC();
 
