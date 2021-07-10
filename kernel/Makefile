@@ -8,7 +8,7 @@ CC = gcc
 ASMC = nasm
 LD = ld
 
-CFLAGS = -ffreestanding -fshort-wchar -I/home/gktdev/Kronos/commonlib -g -O0 -mno-red-zone
+CFLAGS = -ffreestanding -fshort-wchar -mno-red-zone -O0 -g -I/home/gktdev/Kronos/commonlib
 ASMFLAGS =
 LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
 
@@ -33,13 +33,13 @@ kernel: $(OBJS) link
 $(OBJDIR)/interrupts/interrupts.o: $(SRCDIR)/interrupts/interrupts.cpp
 	@ echo !==== COMPILING $^
 	@ mkdir -p $(@D)
-	$(CC) -mno-red-zone -mgeneral-regs-only -ffreestanding -I/home/gktdev/Kronos/commonlib -c $^ -o $@ 
+	$(CC) -mno-red-zone -mgeneral-regs-only -ffreestanding -I/home/gktdev/Kronos/commonlib -c $^ -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@ echo !==== COMPILING $^
 	@ mkdir -p $(@D)
-	$(CC) $(CFLAGS) -c $^ -o $@ -I/home/gktdev/Kronos/commonlib
-
+	$(CC) $(CFLAGS) -c $^ -o $@
+	
 $(OBJDIR)/%_asm.o: $(SRCDIR)/%.asm
 	@ echo !==== COMPILING $^
 	@ mkdir -p $(@D)

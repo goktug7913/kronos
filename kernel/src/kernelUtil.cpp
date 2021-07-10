@@ -6,7 +6,6 @@
 
 KernelInfo kernelInfo; 
 PageTableManager pageTableManager = NULL;
-
 void PrepareMemory(BootInfo* bootInfo){
     uint64_t mMapEntries = bootInfo->mMapSize / bootInfo->mMapDescSize;
 
@@ -156,7 +155,7 @@ KernelInfo InitializeKernel(BootInfo* bootInfo){
 
     PrepareInterrupts();
 
-    PS2MouseInit();
+    InitPS2Mouse();
 
     //Unmask PIC chips
     outb(PIC1_DATA, 0b11111001);

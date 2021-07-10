@@ -1,7 +1,7 @@
+#pragma once
 #include "../IO.h"
 #include "../math.h"
 #include "../BasicRenderer.h"
-#pragma once
 
 #define PS2Leftbutton 0b00000001
 #define PS2Middlebutton 0b00000010
@@ -11,12 +11,7 @@
 #define PS2XOverflow 0b01000000
 #define PS2YOverflow 0b10000000
 
-void PS2MouseInit();
-void MouseWait();
-void MouseWaitInput();
-void MouseWrite(uint8_t val);
-uint8_t MouseRead();
-
+void InitPS2Mouse();
 void HandlePS2Mouse(uint8_t data);
 void ProcessMousePacket();
 extern Point MousePosition;
