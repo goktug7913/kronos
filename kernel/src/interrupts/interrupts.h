@@ -15,12 +15,22 @@
 //- - - - - - - - - - - 
 
 struct interrupt_frame;
-__attribute__((interrupt)) void PageFault_handler(struct interrupt_frame* frame);
-__attribute__((interrupt)) void DoubleFault_handler(struct interrupt_frame* frame);
-__attribute__((interrupt)) void GPFault_handler(struct interrupt_frame* frame);
-__attribute__((interrupt)) void OverflowHandler(struct interrupt_frame* frame);
-__attribute__((interrupt)) void KeyboardInterrupt_handler(struct interrupt_frame* frame);
-__attribute__((interrupt)) void StackSegFaultHandler(struct interrupt_frame* frame);
+
+__attribute__((interrupt)) void DivideByZero_handler(struct interrupt_frame* frame);        //0x0
+__attribute__((interrupt)) void Debug_handler(struct interrupt_frame* frame);               //0x1
+__attribute__((interrupt)) void NMI_handler(struct interrupt_frame* frame);                 //0x2
+__attribute__((interrupt)) void Breakpoint_handler(struct interrupt_frame* frame);          //0x3
+__attribute__((interrupt)) void OverflowHandler(struct interrupt_frame* frame);             //0x4
+__attribute__((interrupt)) void BoundRangeExceeded_handler(struct interrupt_frame* frame);  //0x5
+__attribute__((interrupt)) void InvalidOpcode_handler(struct interrupt_frame* frame);       //0x6
+__attribute__((interrupt)) void DeviceNotFound_handler(struct interrupt_frame* frame);      //0x7
+__attribute__((interrupt)) void DoubleFault_handler(struct interrupt_frame* frame);         //0x8
+__attribute__((interrupt)) void InvalidTSS_handler(struct interrupt_frame* frame);          //0xA
+__attribute__((interrupt)) void SegNotPresent_handler(struct interrupt_frame* frame);       //0xB
+__attribute__((interrupt)) void StackSegFaultHandler(struct interrupt_frame* frame);        //0xC
+__attribute__((interrupt)) void GPFault_handler(struct interrupt_frame* frame);             //0xD
+__attribute__((interrupt)) void PageFault_handler(struct interrupt_frame* frame);           //0xE
+__attribute__((interrupt)) void KeyboardInterrupt_handler(struct interrupt_frame* frame);   //0x21
 
 
 void RemapPIC();

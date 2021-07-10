@@ -6,6 +6,7 @@
 
 KernelInfo kernelInfo; 
 PageTableManager pageTableManager = NULL;
+
 void PrepareMemory(BootInfo* bootInfo){
     uint64_t mMapEntries = bootInfo->mMapSize / bootInfo->mMapDescSize;
 
@@ -46,30 +47,76 @@ void PrepareInterrupts(){
     idtr.Offset = (uint64_t)GlobalAllocator.RequestPage();
     
     { // Fill The IDT with interrupt handlers
-        IDTDescEntry* int_PageFault = (IDTDescEntry*)(idtr.Offset + 0xE * sizeof(IDTDescEntry));
-        int_PageFault->SetOffset((uint64_t)PageFault_handler);
-        int_PageFault->type_attr = IDT_TA_InterruptGate;
-        int_PageFault->selector = 0x08;
 
-        IDTDescEntry* int_DoubleFault = (IDTDescEntry*)(idtr.Offset + 0x8 * sizeof(IDTDescEntry));
-        int_DoubleFault->SetOffset((uint64_t)DoubleFault_handler);
-        int_DoubleFault->type_attr = IDT_TA_InterruptGate;
-        int_DoubleFault->selector = 0x08;
+        IDTDescEntry* int_DivideByZero = (IDTDescEntry*)(idtr.Offset + 0x0 * sizeof(IDTDescEntry));
+        int_DivideByZero->SetOffset((uint64_t)DivideByZero_handler);
+        int_DivideByZero->type_attr = IDT_TA_InterruptGate;
+        int_DivideByZero->selector = 0x08;
 
-        IDTDescEntry* int_GPFault = (IDTDescEntry*)(idtr.Offset + 0xD * sizeof(IDTDescEntry));
-        int_GPFault->SetOffset((uint64_t)GPFault_handler);
-        int_GPFault->type_attr = IDT_TA_InterruptGate;
-        int_GPFault->selector = 0x08;
+        IDTDescEntry* int_Debug = (IDTDescEntry*)(idtr.Offset + 0x1 * sizeof(IDTDescEntry));
+        int_Debug->SetOffset((uint64_t)Debug_handler);
+        int_Debug->type_attr = IDT_TA_InterruptGate;
+        int_Debug->selector = 0x08;
+
+        IDTDescEntry* int_NMI = (IDTDescEntry*)(idtr.Offset + 0x2 * sizeof(IDTDescEntry));
+        int_NMI->SetOffset((uint64_t)NMI_handler);
+        int_NMI->type_attr = IDT_TA_InterruptGate;
+        int_NMI->selector = 0x08;
+
+        IDTDescEntry* int_Breakpoint = (IDTDescEntry*)(idtr.Offset + 0x3 * sizeof(IDTDescEntry));
+        int_Breakpoint->SetOffset((uint64_t)Breakpoint_handler);
+        int_Breakpoint->type_attr = IDT_TA_TrapGate;
+        int_Breakpoint->selector = 0x08;
 
         IDTDescEntry* int_Overflow = (IDTDescEntry*)(idtr.Offset + 0x4 * sizeof(IDTDescEntry));
         int_Overflow->SetOffset((uint64_t)OverflowHandler);
         int_Overflow->type_attr = IDT_TA_TrapGate;
         int_Overflow->selector = 0x08;
 
+        IDTDescEntry* int_BoundRangeExceeded = (IDTDescEntry*)(idtr.Offset + 0x5 * sizeof(IDTDescEntry));
+        int_Breakpoint->SetOffset((uint64_t)BoundRangeExceeded_handler);
+        int_Breakpoint->type_attr = IDT_TA_InterruptGate;
+        int_Breakpoint->selector = 0x08;
+
+        IDTDescEntry* int_InvalidOpcode = (IDTDescEntry*)(idtr.Offset + 0x6 * sizeof(IDTDescEntry));
+        int_InvalidOpcode->SetOffset((uint64_t)InvalidOpcode_handler);
+        int_InvalidOpcode->type_attr = IDT_TA_InterruptGate;
+        int_InvalidOpcode->selector = 0x08;
+
+        IDTDescEntry* int_DeviceNotFound = (IDTDescEntry*)(idtr.Offset + 0x7 * sizeof(IDTDescEntry));
+        int_DeviceNotFound->SetOffset((uint64_t)DeviceNotFound_handler);
+        int_DeviceNotFound->type_attr = IDT_TA_InterruptGate;
+        int_DeviceNotFound->selector = 0x08;
+
+        IDTDescEntry* int_DoubleFault = (IDTDescEntry*)(idtr.Offset + 0x8 * sizeof(IDTDescEntry));
+        int_DoubleFault->SetOffset((uint64_t)DoubleFault_handler);
+        int_DoubleFault->type_attr = IDT_TA_InterruptGate;
+        int_DoubleFault->selector = 0x08;
+
+        IDTDescEntry* int_InvalidTSS = (IDTDescEntry*)(idtr.Offset + 0xA * sizeof(IDTDescEntry));
+        int_InvalidTSS->SetOffset((uint64_t)InvalidTSS_handler);
+        int_InvalidTSS->type_attr = IDT_TA_InterruptGate;
+        int_InvalidTSS->selector = 0x08;
+
+        IDTDescEntry* int_SegNotPresent = (IDTDescEntry*)(idtr.Offset + 0xB * sizeof(IDTDescEntry));
+        int_SegNotPresent->SetOffset((uint64_t)SegNotPresent_handler);
+        int_SegNotPresent->type_attr = IDT_TA_InterruptGate;
+        int_SegNotPresent->selector = 0x08;
+
         IDTDescEntry* int_StackSegmentFault = (IDTDescEntry*)(idtr.Offset + 0xC * sizeof(IDTDescEntry));
         int_StackSegmentFault->SetOffset((uint64_t)StackSegFaultHandler);
-        int_StackSegmentFault->type_attr = IDT_TA_TrapGate;
+        int_StackSegmentFault->type_attr = IDT_TA_InterruptGate;
         int_StackSegmentFault->selector = 0x08;
+
+        IDTDescEntry* int_GPFault = (IDTDescEntry*)(idtr.Offset + 0xD * sizeof(IDTDescEntry));
+        int_GPFault->SetOffset((uint64_t)GPFault_handler);
+        int_GPFault->type_attr = IDT_TA_InterruptGate;
+        int_GPFault->selector = 0x08;
+        
+        IDTDescEntry* int_PageFault = (IDTDescEntry*)(idtr.Offset + 0xE * sizeof(IDTDescEntry));
+        int_PageFault->SetOffset((uint64_t)PageFault_handler);
+        int_PageFault->type_attr = IDT_TA_InterruptGate;
+        int_PageFault->selector = 0x08;
 
         IDTDescEntry* int_Keyboard = (IDTDescEntry*)(idtr.Offset + 0x21 * sizeof(IDTDescEntry));
         int_Keyboard->SetOffset((uint64_t)KeyboardInterrupt_handler);

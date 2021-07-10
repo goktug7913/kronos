@@ -40,7 +40,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@ mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $^ -o $@ -I/home/gktdev/Kronos/commonlib
 
-$(OBJDIR)/%_asm.o:  /%.asm
+$(OBJDIR)/%_asm.o: $(SRCDIR)/%.asm
 	@ echo !==== COMPILING $^
 	@ mkdir -p $(@D)
 	$(ASMC) $(ASMFLAGS) $^ -f elf64 -o $@
