@@ -2,11 +2,11 @@
 #include "BasicRenderer.h"
 
 void Panic(const char* message){
-    GlobalRenderer->Clear(7995392);
+    GlobalRenderer->Clear(0x7a0000);
 
     GlobalRenderer->CursorPosition = {0, 0};
 
-    GlobalRenderer->ClearColour = 7995392;
+    GlobalRenderer->ClearColour = 0x520000;
 
     GlobalRenderer->Print("-Kernel Panic-");
     GlobalRenderer->Next();

@@ -41,6 +41,10 @@ void PrepareMemory(BootInfo* bootInfo){
 
 IDTR idtr;
 
+//----------------------------------------------------------------------------------------------------------------------------------------
+/*void SetIDTGate(void* handler, uint8_t entryoffset, uint8_t type_attr, uint8_t selector){} IMPLEMENT THIS*/
+//----------------------------------------------------------------------------------------------------------------------------------------
+
 void PrepareInterrupts(){
     
     idtr.Limit = 0x0FFF;
@@ -122,14 +126,17 @@ void PrepareInterrupts(){
         int_Keyboard->SetOffset((uint64_t)KeyboardInterrupt_handler);
         int_Keyboard->type_attr = IDT_TA_InterruptGate;
         int_Keyboard->selector = 0x08;
+
+        IDTDescEntry* int_Mouse = (IDTDescEntry*)(idtr.Offset + 0x2C * sizeof(IDTDescEntry));
+        int_Mouse->SetOffset((uint64_t)MouseInterrupt_handler);
+        int_Mouse->type_attr = IDT_TA_InterruptGate;
+        int_Mouse->selector = 0x08;
     }
 
     asm ("lidt %0" : : "m" (idtr));
     
     RemapPIC();
 
-    outb(PIC1_DATA, 0b11111101);
-    outb(PIC2_DATA, 0b11111111);
     asm ("sti"); //Enable Maskable Interrupts
 }
 
@@ -148,6 +155,12 @@ KernelInfo InitializeKernel(BootInfo* bootInfo){
     memset(bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize);
 
     PrepareInterrupts();
+
+    PS2MouseInit();
+
+    //Unmask PIC chips
+    outb(PIC1_DATA, 0b11111001);
+    outb(PIC2_DATA, 0b11111111);
 
     return kernelInfo;
 }

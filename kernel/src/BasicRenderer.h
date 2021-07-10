@@ -11,7 +11,7 @@ class BasicRenderer{
     Framebuffer* TargetFramebuffer; //GOP Framebuffer Address
     PSF1_FONT* PSF1_Font;
     unsigned int Colour;
-    unsigned int ClearColour = 0;
+    unsigned int ClearColour = 0x000a1a;
 
     void Print(const char* str);
 
@@ -20,11 +20,8 @@ class BasicRenderer{
     void ClearChar();
     void Clear(uint32_t colour);
     void Next();
+    void checkLastLine();
     void Scroll(uint8_t lines, bool up_dwn);
-
-    //struct HistoryEntry;//---------------------------------------------
-    //struct TerminalHistory;//---------------------------------------------
-    uint64_t backbufSize;
 };
 
 extern BasicRenderer* GlobalRenderer;

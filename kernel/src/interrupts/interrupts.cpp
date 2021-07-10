@@ -45,32 +45,32 @@ __attribute__((interrupt)) void DeviceNotFound_handler(struct interrupt_frame* f
     while(true);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-__attribute__((interrupt)) void DoubleFault_handler(struct interrupt_frame* frame){
+__attribute__((interrupt)) void DoubleFault_handler(struct interrupt_frame* frame, long long int uword_t){
     Panic("Exception: Double Fault Detected");
     while(true);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-__attribute__((interrupt)) void InvalidTSS_handler(struct interrupt_frame* frame){
+__attribute__((interrupt)) void InvalidTSS_handler(struct interrupt_frame* frame, long long int uword_t){
     Panic("Exception: Invalid TSS");
     while(true);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-__attribute__((interrupt)) void SegNotPresent_handler(struct interrupt_frame* frame){
+__attribute__((interrupt)) void SegNotPresent_handler(struct interrupt_frame* frame, long long int uword_t){
     Panic("Exception: Segment Not Present!");
     while(true);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-__attribute__((interrupt)) void StackSegFaultHandler(struct interrupt_frame* frame){
+__attribute__((interrupt)) void StackSegFaultHandler(struct interrupt_frame* frame, long long int uword_t){
     Panic("Exception: Stack Segment Fault Detected");
     while(true);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-__attribute__((interrupt)) void GPFault_handler(struct interrupt_frame* frame){
+__attribute__((interrupt)) void GPFault_handler(struct interrupt_frame* frame, long long int uword_t){
     Panic("Exception: General Protection Fault Detected");
     while(true);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-__attribute__((interrupt)) void PageFault_handler(struct interrupt_frame* frame){
+__attribute__((interrupt)) void PageFault_handler(struct interrupt_frame* frame, long long int uword_t){
     Panic("Exception: Page Fault Detected");
     while(true);
 }
@@ -79,6 +79,14 @@ __attribute__((interrupt)) void KeyboardInterrupt_handler(struct interrupt_frame
     uint8_t scancode = inb(0x60);   //Get the key scancode
     HandleKeyboard(scancode);       //Handle keyboard scancode
     PIC_EndMaster();                //Clear the interrupt
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+__attribute__((interrupt)) void MouseInterrupt_handler(struct interrupt_frame* frame){
+    
+    auto mousedata = inb(0x60);
+    
+    //GlobalRenderer->Print("Mouse moved ");
+    PIC_EndSlave();
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void RemapPIC(){
