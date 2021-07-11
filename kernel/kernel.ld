@@ -11,6 +11,10 @@ SECTIONS
 	.data : ALIGN(0x1000)
 	{
 		*(.data)
+		*(COMMON)
+		_bssStart = .;
+		*(.bss)
+		_bssEnd = .;
 	}
 	.rodata : ALIGN(0x1000)
 	{
@@ -18,8 +22,6 @@ SECTIONS
 	}
 	.bss : ALIGN(0x1000)
 	{
-		*(COMMON)
-		*(.bss)
 	}
 	_KernelEnd = .;
 }

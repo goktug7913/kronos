@@ -85,7 +85,7 @@ __attribute__((interrupt)) void MouseInterrupt_handler(struct interrupt_frame* f
     
     auto mousedata = inb(0x60);
     
-    //GlobalRenderer->Print("Mouse moved ");
+    GlobalRenderer->Print("Mouse moved ");
     PIC_EndSlave();
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

@@ -154,6 +154,11 @@ int memcmp(const void* aptr, const void* bptr, size_t n){
 	return 0;
 }
 
+void memset(void* start, uint8_t value, uint64_t num){
+    	for (uint64_t i = 0; i < num; i++){
+        	*(uint8_t*)((uint64_t)start + i) = value;
+    	}
+	}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 EFI_STATUS efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 	InitializeLib(ImageHandle, SystemTable);
@@ -257,8 +262,6 @@ EFI_STATUS efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 		SystemTable->BootServices->GetMemoryMap(&MapSize, MemMap, &MapKey, &DescSize, &DescVersion);
 	}
 
-
-
 	//Declaration of kernel handoff function
 	void (*KernelStart)(BootInfo*) = ((__attribute__((sysv_abi)) void (*)(BootInfo*) ) header.e_entry);
 	
@@ -271,6 +274,13 @@ EFI_STATUS efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 	bootinfo.mMapDescSize = DescSize;
 
 	SystemTable->BootServices->ExitBootServices(ImageHandle, MapKey);
+
+
+	//Zerofill .bss
+	extern _bssStart;
+	extern _bssEnd;
+	uint64_t bssSize = (uint64_t)&_bssEnd - (uint64_t)&_bssStart;
+	memset(_bssStart, 0, bssSize);
 
 	//Call the kernel
 	KernelStart(&bootinfo);
