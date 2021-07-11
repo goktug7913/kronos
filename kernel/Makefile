@@ -1,7 +1,7 @@
 
 OSNAME = Kronos
 
-GNUEFI = ../gnu-efi
+LIMINE = ../limine
 OVMFDIR = ../OVMFbin
 LDS = kernel.ld
 CC = gcc
@@ -16,7 +16,7 @@ LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
 SRCDIR := src
 OBJDIR := lib
 BUILDDIR = bin
-BOOTEFI := $(GNUEFI)/x86_64/bootloader/main.efi
+BOOTEFI := $(LIMINE)/BOOTX64.EFI
 
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
@@ -58,9 +58,10 @@ buildimg:
 	mmd -i $(BUILDDIR)/$(OSNAME).img ::/EFI
 	mmd -i $(BUILDDIR)/$(OSNAME).img ::/EFI/BOOT
 	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BOOTEFI) ::/EFI/BOOT
-	mcopy -i $(BUILDDIR)/$(OSNAME).img startup.nsh ::
 	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/kernel.elf ::
 	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/zap-light18.psf ::
+	mcopy -i $(BUILDDIR)/$(OSNAME).img $(LIMINE)/limine.sys ::
+	mcopy -i $(BUILDDIR)/$(OSNAME).img $(LIMINE)/limine.cfg ::
 
 run:
 	qemu-system-x86_64 -drive file=$(BUILDDIR)/$(OSNAME).img -m 256M -cpu qemu64 -drive if=pflash,format=raw,unit=0,file="$(OVMFDIR)/OVMF_CODE-pure-efi.fd",readonly=on -drive if=pflash,format=raw,unit=1,file="$(OVMFDIR)/OVMF_VARS-pure-efi.fd" -net none

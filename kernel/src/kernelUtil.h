@@ -20,4 +20,4 @@ struct KernelInfo {
     PageTableManager* pageTableManager;
 };
 
-KernelInfo InitializeKernel(BootInfo* BootInfo);
+KernelInfo InitializeKernel(struct stivale2_struct *bootInfo);

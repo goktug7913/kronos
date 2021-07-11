@@ -140,7 +140,7 @@ void PrepareInterrupts(){
 }
 
 BasicRenderer r = BasicRenderer(NULL, NULL);
-KernelInfo InitializeKernel(BootInfo* bootInfo){
+KernelInfo InitializeKernel(struct stivale2_struct *bootInfo){
     r = BasicRenderer(bootInfo->framebuffer, bootInfo->psf1_Font);
     GlobalRenderer = &r;
 
