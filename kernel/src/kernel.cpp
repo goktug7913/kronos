@@ -72,36 +72,16 @@ static struct stivale2_header stivale_hdr = {
     .tags = (uintptr_t)&framebuffer_hdr_tag
 };
  
-// Helper function which will allow us to scan for tags
-// that we want FROM the bootloader (structure tags).
-void *stivale2_get_tag(struct stivale2_struct *stivale2_struct, uint64_t id) {
-    struct stivale2_tag *current_tag = (stivale2_tag *)stivale2_struct->tags; //Cast?
-    for (;;) {
-        // If the tag pointer is NULL (end of linked list), we did not find
-        // the tag. Return NULL to signal this.
-        if (current_tag == NULL) {
-            return NULL;
-        }
-
-        // Check whether the identifier matches. If it does, return a pointer
-        // to the matching tag.
-        if (current_tag->identifier == id) {
-            return current_tag;
-        }
-
-        // Get a pointer to the next tag in the linked list and repeat.
-        current_tag = (stivale2_tag *)current_tag->next;
-    }
-}
 
 
 
-extern "C" void _start(struct stivale2_struct *bootInfo){
 
+extern "C" [[noreturn]] void _start(struct stivale2_struct *bootInfo){
+    
     KernelInfo kernelInfo = InitializeKernel(bootInfo);
     PageTableManager* pageTableManager = kernelInfo.pageTableManager;
 
-    GlobalRenderer->Clear(0x000a1a);
+    //GlobalRenderer->Clear(0x000a1a);
     GlobalRenderer->Print("Kernel Initialized Successfully"); GlobalRenderer->Next();
     
     extern uint64_t _bssStart;

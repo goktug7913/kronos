@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "stivale2.h"
 #include "BasicRenderer.h"
 #include "cstr.h"
 #include "efiMemory.h"

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __STIVALE__STIVALE2_H__
 #define __STIVALE__STIVALE2_H__
 

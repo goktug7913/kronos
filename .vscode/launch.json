@@ -8,7 +8,7 @@
             "name": "Debug Kernel",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/kernel/bin/kernel.elf",
+            "program": "${workspaceFolder}/kernel/bin/stivale2.elf",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -23,7 +23,7 @@
                 }
                 ,
                 {
-                    "text": "symbol-file kernel.elf",
+                    "text": "symbol-file stivale2.elf",
                     "description": "get symbols"
                 }
             ],

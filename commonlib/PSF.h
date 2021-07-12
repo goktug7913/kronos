@@ -1,5 +1,4 @@
 #include <stddef.h>
-
 #pragma once
 
 #define PSF1_MAGIC0 0X36

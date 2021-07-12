@@ -3,13 +3,14 @@
 #include "framebuffer.h"
 #include "PSF.h"
 #include "paging/PageFrameAllocator.h"
+#include "stivale2.h"
 
 class BasicRenderer{
     public:
-    BasicRenderer(Framebuffer* targetFramebuffer, PSF1_FONT* psf1_Font);
+    BasicRenderer(stivale2_struct_tag_framebuffer* targetFramebuffer, stivale2_module psf1_Font);
     Point CursorPosition;
     Framebuffer* TargetFramebuffer; //GOP Framebuffer Address
-    PSF1_FONT* PSF1_Font;
+    stivale2_module PSF1_Font;
     unsigned int Colour;
     unsigned int ClearColour = 0x000a1a;
 

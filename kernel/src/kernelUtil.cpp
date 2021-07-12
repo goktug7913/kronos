@@ -3,9 +3,33 @@
 #include "interrupts/IDT.h"
 #include "interrupts/interrupts.h"
 #include "IO.h"
+#include "stivale2.h"
 
 KernelInfo kernelInfo; 
 PageTableManager pageTableManager = NULL;
+
+// Helper function which will allow us to scan for tags
+// that we want FROM the bootloader (structure tags).
+extern "C" void *stivale2_get_tag(struct stivale2_struct *stivale2_struct, uint64_t id) {
+    struct stivale2_tag *current_tag = (void *)stivale2_struct->tags;
+    for (;;) {
+        // If the tag pointer is NULL (end of linked list), we did not find
+        // the tag. Return NULL to signal this.
+        if (current_tag == NULL) {
+            return NULL;
+        }
+ 
+        // Check whether the identifier matches. If it does, return a pointer
+        // to the matching tag.
+        if (current_tag->identifier == id) {
+            return current_tag;
+        }
+ 
+        // Get a pointer to the next tag in the linked list and repeat.
+        current_tag = (void *)current_tag->next;
+    }
+}
+
 void PrepareMemory(BootInfo* bootInfo){
     uint64_t mMapEntries = bootInfo->mMapSize / bootInfo->mMapDescSize;
 
@@ -138,10 +162,18 @@ void PrepareInterrupts(){
 
     asm ("sti"); //Enable Maskable Interrupts
 }
+stivale2_module stub;
+BasicRenderer r = BasicRenderer((stivale2_struct_tag_framebuffer*)NULL, stub); //takes stivale2_struct_tag_framebuffer AND stivale2_module
 
-BasicRenderer r = BasicRenderer(NULL, NULL);
 KernelInfo InitializeKernel(struct stivale2_struct *bootInfo){
-    r = BasicRenderer(bootInfo->framebuffer, bootInfo->psf1_Font);
+    
+    auto *modules = (stivale2_struct_tag_modules *) stivale2_get_tag(bootInfo,STIVALE2_STRUCT_TAG_MODULES_ID);
+    auto *memmap = (stivale2_struct_tag_memmap *) stivale2_get_tag(bootInfo, STIVALE2_STRUCT_TAG_MEMMAP_ID);
+    auto *sti_framebuffer = (stivale2_struct_tag_framebuffer*) stivale2_get_tag(bootInfo, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
+
+    stivale2_module font = *modules->modules;
+
+    r = BasicRenderer(sti_framebuffer, font);
     GlobalRenderer = &r;
 
     GDTDescriptor gdtDescriptor;
@@ -149,9 +181,9 @@ KernelInfo InitializeKernel(struct stivale2_struct *bootInfo){
     gdtDescriptor.Offset = (uint64_t)&DefaultGDT;
     LoadGDT(&gdtDescriptor);
 
-    PrepareMemory(bootInfo);
+    //PrepareMemory(bootInfo);
 
-    memset(bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize);
+    memset((void*)sti_framebuffer->framebuffer_addr, 0, sti_framebuffer->framebuffer_pitch*sti_framebuffer->framebuffer_height);
 
     PrepareInterrupts();
 

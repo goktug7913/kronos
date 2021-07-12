@@ -1,4 +1,3 @@
-
 OSNAME = Kronos
 
 LIMINE = ../limine
@@ -8,10 +7,32 @@ CC = gcc
 ASMC = nasm
 LD = ld
 
-CFLAGS = -ffreestanding -fshort-wchar -mno-red-zone -O0 -g -I/home/gktdev/Kronos/commonlib
+CFLAGS = -ffreestanding -fshort-wchar -mno-red-zone -O0 -g -I/home/gktdev/Kronos/commonlib -fpermissive
 ASMFLAGS =
 LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
 
+# Internal link flags that should not be changed by the user.
+INTERNALLDFLAGS :=     \
+		-fno-pic -fpie \
+		-Wl,-static,-pie,--no-dynamic-linker,-ztext \
+		-static-pie    \
+		-nostdlib      \
+		-Tlinker.ld    \
+		-z max-page-size=0x1000
+ 
+# Internal C flags that should not be changed by the user.
+INTERNALCFLAGS  :=           \
+		-I.                  \
+		-std=gnu11           \
+		-ffreestanding       \
+		-fno-stack-protector \
+		-fno-pic -fpie       \
+		-mno-80387           \
+		-mno-mmx             \
+		-mno-3dnow           \
+		-mno-sse             \
+		-mno-sse2            \
+		-mno-red-zone
 
 SRCDIR := src
 OBJDIR := lib
@@ -47,21 +68,26 @@ $(OBJDIR)/%_asm.o: $(SRCDIR)/%.asm
 	
 link:
 	@ echo !==== LINKING
-	$(LD) $(LDFLAGS) -o $(BUILDDIR)/kernel.elf $(OBJS)
+	$(LD) $(LDFLAGS) -o $(BUILDDIR)/stivale2.elf $(OBJS)
 
 setup:
 	@mkdir $(OBJDIR)
 
 buildimg:
-	dd if=/dev/zero of=$(BUILDDIR)/$(OSNAME).img bs=512 count=93750
-	mformat -i $(BUILDDIR)/$(OSNAME).img -f 1440 ::
-	mmd -i $(BUILDDIR)/$(OSNAME).img ::/EFI
-	mmd -i $(BUILDDIR)/$(OSNAME).img ::/EFI/BOOT
-	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BOOTEFI) ::/EFI/BOOT
-	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/kernel.elf ::
-	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/zap-light18.psf ::
-	mcopy -i $(BUILDDIR)/$(OSNAME).img $(LIMINE)/limine.sys ::
-	mcopy -i $(BUILDDIR)/$(OSNAME).img $(LIMINE)/limine.cfg ::
+	
+	mkdir -p iso_root
+	
+	cp -v $(BUILDDIR)/stivale2.elf $(BUILDDIR)/limine.cfg $(BUILDDIR)/startup.nsh\
+		limine/limine-cd.bin limine/limine-eltorito-efi.bin iso_root/
+	
+	xorriso -as mkisofs -b limine-cd.bin \
+		-no-emul-boot -boot-load-size 4 -boot-info-table \
+		--efi-boot limine-eltorito-efi.bin \
+		-efi-boot-part --efi-boot-image --protective-msdos-label \
+		iso_root -o Kronos.iso
+ 
+# Install Limine stage 1 and 2 for legacy BIOS boot.
+	./limine/limine-install Kronos.iso
 
 run:
 	qemu-system-x86_64 -drive file=$(BUILDDIR)/$(OSNAME).img -m 256M -cpu qemu64 -drive if=pflash,format=raw,unit=0,file="$(OVMFDIR)/OVMF_CODE-pure-efi.fd",readonly=on -drive if=pflash,format=raw,unit=1,file="$(OVMFDIR)/OVMF_VARS-pure-efi.fd" -net none

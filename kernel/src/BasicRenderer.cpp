@@ -1,9 +1,15 @@
 #include "BasicRenderer.h"
+#include "stivale2.h"
 
 BasicRenderer* GlobalRenderer;
 
-BasicRenderer::BasicRenderer(Framebuffer* targetFramebuffer, PSF1_FONT* psf1_Font){
-    TargetFramebuffer = targetFramebuffer;
+BasicRenderer::BasicRenderer(stivale2_struct_tag_framebuffer* sti_Framebuffer, stivale2_module psf1_Font){
+
+    TargetFramebuffer->BaseAddress = (uint64_t*)sti_Framebuffer->framebuffer_addr;
+    TargetFramebuffer->Width = sti_Framebuffer->framebuffer_width;
+    TargetFramebuffer->Height = sti_Framebuffer->framebuffer_height;
+    TargetFramebuffer->PixelsPerScanLine = sti_Framebuffer->framebuffer_width;
+
     PSF1_Font = psf1_Font;
     Colour = 0xffffffff;
     CursorPosition = {0, 0};
@@ -23,11 +29,15 @@ void BasicRenderer::Print(const char* str){
 
 void BasicRenderer::PutChar(char chr, unsigned int xOff, unsigned int yOff){
     unsigned int* pixPtr = (unsigned int*)TargetFramebuffer->BaseAddress;
-    char* fontPtr = (char*)PSF1_Font->glyphBuf + (chr * PSF1_Font->psf1_header->charsize);
+    unsigned long baseAddress = PSF1_Font.begin + 4;
+    unsigned char charSize = *((unsigned char *)baseAddress - 1);
+    void *glyphBuffer = (void *)baseAddress;
+    char *fontPtr = (char*)(((unsigned long)glyphBuffer) + (chr * charSize));
+
     for (unsigned long y = yOff; y < yOff + 18; y++){
         for (unsigned long x = xOff; x < xOff+8; x++){
             if ((*fontPtr & (0b10000000 >> (x - xOff))) > 0){
-                    *(unsigned int*)(pixPtr + x + (y * TargetFramebuffer->PixelsPerScanLine)) = Colour;
+                    *(unsigned int*)(pixPtr + x + (y * TargetFramebuffer->pitch)) = Colour;
                 }
 
         }
