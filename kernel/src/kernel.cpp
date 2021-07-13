@@ -1,8 +1,8 @@
 #include "stivale2.h"
-#include "kernelUtil.h"
-#include "IO.h"
 #include <stdint.h>
 #include <stddef.h>
+#include "renderer.h"
+
 
 // We need to tell the stivale bootloader where we want our stack to be.
 // We are going to allocate our stack as an uninitialised array in .bss.
@@ -45,9 +45,9 @@ static struct stivale2_header_tag_framebuffer framebuffer_hdr_tag = {
     },
     // We set all the framebuffer specifics to 0 as we want the bootloader
     // to pick the best it can.
-    .framebuffer_width  = 0,
-    .framebuffer_height = 0,
-    .framebuffer_bpp    = 0
+    .framebuffer_width  = 1920,
+    .framebuffer_height = 1080,
+    .framebuffer_bpp    = 24
 };
  
 // The stivale2 specification says we need to define a "header structure".
@@ -71,30 +71,28 @@ static struct stivale2_header stivale_hdr = {
     // points to the first one in the linked list.
     .tags = (uintptr_t)&framebuffer_hdr_tag
 };
- 
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-
+Renderer r = Renderer(NULL);
 
 extern "C" [[noreturn]] void _start(struct stivale2_struct *bootInfo){
     
-    KernelInfo kernelInfo = InitializeKernel(bootInfo);
-    PageTableManager* pageTableManager = kernelInfo.pageTableManager;
+    stivale2_struct_tag_modules* modules = (stivale2_struct_tag_modules *) stivale2_get_tag(bootInfo,STIVALE2_STRUCT_TAG_MODULES_ID);
+    stivale2_struct_tag_memmap* memmap = (stivale2_struct_tag_memmap *) stivale2_get_tag(bootInfo, STIVALE2_STRUCT_TAG_MEMMAP_ID);
+    stivale2_struct_tag_framebuffer *sti_framebuffer = (stivale2_struct_tag_framebuffer*) stivale2_get_tag(bootInfo, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
 
-    //GlobalRenderer->Clear(0x000a1a);
-    GlobalRenderer->Print("Kernel Initialized Successfully"); GlobalRenderer->Next();
+    stivale2_module* font = modules->modules;
     
-    extern uint64_t _bssStart;
-	extern uint64_t _bssEnd;
+    r = Renderer(sti_framebuffer);
+    kRenderer = &r;
 
-	uint64_t bssSize = (uint64_t)&_bssEnd - (uint64_t)&_bssStart;
-    void* bssaddr = &_bssStart;
-
-    for(long i = 0; i < bssSize; i++){
-        GlobalRenderer->Print(to_hstring(
-                (uint8_t)*((uint8_t*)(bssaddr + i))
-            ));
-        GlobalRenderer->Print(", ");
+    for(int i = 0; i < kRenderer->Size; i++){
+        uint64_t* base = (uint64_t*)((uint64_t)kRenderer->BaseAddr+(i*32));
+        *base = 0xfffffff;
     }
 
     while(true){};

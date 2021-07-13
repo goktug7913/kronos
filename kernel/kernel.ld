@@ -12,12 +12,12 @@ SECTIONS
  
     /* We place the .stivale2hdr section containing the header in its own section, */
     /* and we use the KEEP directive on it to make sure it doesn't get discarded. */
+	_KernelStart = .;
     .stivale2hdr : 
 	{
         KEEP(*(.stivale2hdr))
     }
 
-	_KernelStart = .;
 	.text : ALIGN(0x1000)
 	{
 		*(.text)
