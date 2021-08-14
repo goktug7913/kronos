@@ -77,7 +77,7 @@ buildimg:
 	
 	mkdir -p iso_root
 	
-	cp -v $(BUILDDIR)/stivale2.elf $(BUILDDIR)/limine.cfg $(BUILDDIR)/startup.nsh\
+	cp -v $(BUILDDIR)/stivale2.elf $(BUILDDIR)/limine.cfg $(BUILDDIR)/zap-light16.psf\
 		limine/limine-cd.bin limine/limine-eltorito-efi.bin iso_root/
 	
 	xorriso -as mkisofs -b limine-cd.bin \

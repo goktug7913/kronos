@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "renderer.h"
-
+#include "psf.h"
 
 // We need to tell the stivale bootloader where we want our stack to be.
 // We are going to allocate our stack as an uninitialised array in .bss.
@@ -72,12 +72,33 @@ static struct stivale2_header stivale_hdr = {
     .tags = (uintptr_t)&framebuffer_hdr_tag
 };
 
+extern "C" void *stivale2_get_tag(struct stivale2_struct *stivale2_struct, uint64_t id) {
+    struct stivale2_tag *current_tag = (stivale2_tag *)stivale2_struct->tags;
+    for (;;) {
+        // If the tag pointer is NULL (end of linked list), we did not find
+        // the tag. Return NULL to signal this.
+        if (current_tag == NULL) {
+            return NULL;
+        }
+ 
+        // Check whether the identifier matches. If it does, return a pointer
+        // to the matching tag.
+        if (current_tag->identifier == id) {
+            return current_tag;
+        }
+ 
+        // Get a pointer to the next tag in the linked list and repeat.
+        current_tag = (stivale2_tag *)current_tag->next;
+    }
+}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-Renderer r = Renderer(NULL);
+
+Renderer r = Renderer(NULL, 0); //Stub
 
 extern "C" [[noreturn]] void _start(struct stivale2_struct *bootInfo){
     
@@ -85,15 +106,30 @@ extern "C" [[noreturn]] void _start(struct stivale2_struct *bootInfo){
     stivale2_struct_tag_memmap* memmap = (stivale2_struct_tag_memmap *) stivale2_get_tag(bootInfo, STIVALE2_STRUCT_TAG_MEMMAP_ID);
     stivale2_struct_tag_framebuffer *sti_framebuffer = (stivale2_struct_tag_framebuffer*) stivale2_get_tag(bootInfo, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
 
-    stivale2_module* font = modules->modules;
-    
-    r = Renderer(sti_framebuffer);
+    stivale2_module* fontModule = modules->modules;
+    //PSF_font font = *(PSF_font*)fontModule->begin;
+    uint64_t* font = (uint64_t*)fontModule->begin;
+
+    r = Renderer(sti_framebuffer, font);
     kRenderer = &r;
 
-    for(int i = 0; i < kRenderer->Size; i++){
-        uint64_t* base = (uint64_t*)((uint64_t)kRenderer->BaseAddr+(i*32));
-        *base = 0xfffffff;
-    }
+    kRenderer->Init();
+    kRenderer->SetBgColor(0x002338);
+    kRenderer->color = 0xffb0fc;
 
+    kRenderer->Clear();
+
+    kRenderer->putc('K',100, 100);
+    kRenderer->putc('r',110, 100);
+    kRenderer->putc('o',120, 100);
+    kRenderer->putc('n',130, 100);
+    kRenderer->putc('o',140, 100);
+    kRenderer->putc('s',150, 100);
+
+        for (size_t x = 0; x < 200; x++){
+            kRenderer->PlotPixel(x,5,0xFFFFFFF);
+            kRenderer->PlotPixel(x,6,0xFFFFFFF);
+            kRenderer->PlotPixel(x,7,0xFFFFFFF);
+        }
     while(true){};
 }
